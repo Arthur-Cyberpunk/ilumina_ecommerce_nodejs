@@ -97,6 +97,8 @@ app.post("/newfurnitures/upload", upload.array("img", 3), async (req, res) => {
 //   }
 // });
 
-app.listen(8080, () => {
-  console.log("App rodando!");
+const port = process.env.PORT || 3000;
+
+app.listen(port, "0.0.0.0", function () {
+  // ...
 });
