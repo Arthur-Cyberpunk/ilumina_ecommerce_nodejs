@@ -4,6 +4,7 @@ const app = express();
 const connectToDatabase = require("../database/connect");
 const CategoriesModel = require("../models/categories.model");
 const FurnitureModel = require("../models/furniture.model");
+const upload = require("../multerConfig/multer");
 
 connectToDatabase();
 
@@ -33,7 +34,7 @@ app.post("/newcategories", async (req, res) => {
   }
 });
 
-app.post("/newfurnitures", async (req, res) => {
+app.post("/newfurnitures", upload.single("img"), async (req, res) => {
   try {
     const {
       categorie,
@@ -46,6 +47,8 @@ app.post("/newfurnitures", async (req, res) => {
       weight,
       size,
     } = req.body; // Suponhamos que você recebe o nome da categoria em vez do ID
+
+    const image = req.file;
 
     console.log(categorie);
 
@@ -61,7 +64,7 @@ app.post("/newfurnitures", async (req, res) => {
     // Crie o produto usando o ID da categoria recuperado
     const novoProduto = new FurnitureModel({
       categorie: categoria._id,
-      img,
+      img: image.path,
       name,
       price,
       otherImgs,
@@ -74,10 +77,20 @@ app.post("/newfurnitures", async (req, res) => {
     // Salve o novo produto no banco de dados
     await novoProduto.save();
 
+    console.log(novoProduto);
+
     res.status(201).json(novoProduto);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Erro ao criar o produto" });
+  }
+});
+
+app.post("/upload", upload.single("file"), (req, res) => {
+  try {
+    res.status(201).json(req.file.filename);
+  } catch (error) {
+    res.status(500).send(error.message);
   }
 });
 
