@@ -5,10 +5,6 @@ const categoriesSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  id: {
-    type: String,
-    required: true,
-  },
 });
 
 const CategoriesModel = mongoose.model("Categories", categoriesSchema);

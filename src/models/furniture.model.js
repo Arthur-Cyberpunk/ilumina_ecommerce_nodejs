@@ -1,19 +1,16 @@
 const mongoose = require("mongoose");
 
 const furnitureSchema = new mongoose.Schema({
-  id: {
-    type: String,
-    required: true,
-  },
-  category: {
-    type: String,
+  categorie: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: String,
     required: true,
   },
   img: {
     type: String,
     required: true,
   },
-  description: {
+  name: {
     type: String,
     required: true,
   },
