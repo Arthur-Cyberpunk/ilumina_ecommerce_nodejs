@@ -18,14 +18,6 @@ const furnitureSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  otherImgs: {
-    type: String,
-    required: true,
-  },
-  specs: {
-    type: String,
-    required: true,
-  },
   texture: {
     type: String,
     required: true,

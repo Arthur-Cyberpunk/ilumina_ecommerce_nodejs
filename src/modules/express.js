@@ -13,10 +13,8 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.get("/", async (req, res) => {
+app.get("/categories", async (req, res) => {
   const categories = await CategoriesModel.find({});
-
-  console.log(categories);
 
   res.status(201).json(categories);
 });
@@ -29,6 +27,12 @@ app.post("/newcategories", async (req, res) => {
   } catch (error) {
     res.status(500).send(error.message);
   }
+});
+
+app.get("/furnitures", async (req, res) => {
+  const furnitures = await FurnitureModel.find({});
+
+  res.status(201).json(furnitures);
 });
 
 app.post("/newfurnitures/upload", upload.array("img", 3), async (req, res) => {
