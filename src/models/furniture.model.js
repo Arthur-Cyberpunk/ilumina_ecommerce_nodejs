@@ -7,7 +7,7 @@ const furnitureSchema = new mongoose.Schema({
     required: true,
   },
   img: {
-    type: String,
+    type: Array,
     required: true,
   },
   name: {

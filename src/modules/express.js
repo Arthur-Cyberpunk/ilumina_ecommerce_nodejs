@@ -10,11 +10,8 @@ connectToDatabase();
 
 app.use(express.json());
 
-// Body parser
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-// Rotas
 
 app.get("/", async (req, res) => {
   const categories = await CategoriesModel.find({});
@@ -34,7 +31,7 @@ app.post("/newcategories", async (req, res) => {
   }
 });
 
-app.post("/newfurnitures", upload.single("img"), async (req, res) => {
+app.post("/newfurnitures/upload", upload.array("img", 3), async (req, res) => {
   try {
     const {
       categorie,
@@ -48,23 +45,27 @@ app.post("/newfurnitures", upload.single("img"), async (req, res) => {
       size,
     } = req.body; // Suponhamos que você recebe o nome da categoria em vez do ID
 
-    const image = req.file;
+    const image = req.files;
 
-    console.log(categorie);
+    const imagesUrls = [];
+
+    image.forEach((images) => {
+      if (images.path) {
+        imagesUrls.push(images.path);
+      }
+    });
 
     // Encontre a categoria com base no nome fornecido
     const categoria = await CategoriesModel.findOne({ categories: categorie });
-
-    console.log(categoria);
 
     if (!categoria) {
       return res.status(404).json({ message: "Categoria não encontrada" });
     }
 
     // Crie o produto usando o ID da categoria recuperado
-    const novoProduto = new FurnitureModel({
+    const newProduct = new FurnitureModel({
       categorie: categoria._id,
-      img: image.path,
+      img: imagesUrls,
       name,
       price,
       otherImgs,
@@ -75,24 +76,22 @@ app.post("/newfurnitures", upload.single("img"), async (req, res) => {
     });
 
     // Salve o novo produto no banco de dados
-    await novoProduto.save();
+    await newProduct.save();
 
-    console.log(novoProduto);
-
-    res.status(201).json(novoProduto);
+    res.status(201).json(newProduct);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Erro ao criar o produto" });
   }
 });
 
-app.post("/upload", upload.single("file"), (req, res) => {
-  try {
-    res.status(201).json(req.file.filename);
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
-});
+// app.post("/upload", upload.single("file"), (req, res) => {
+//   try {
+//     res.status(201).json(req.file.filename);
+//   } catch (error) {
+//     res.status(500).send(error.message);
+//   }
+// });
 
 app.listen(8080, () => {
   console.log("App rodando!");
