@@ -12,6 +12,8 @@ connectToDatabase();
 app.use(express.json());
 app.use(cors());
 
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
