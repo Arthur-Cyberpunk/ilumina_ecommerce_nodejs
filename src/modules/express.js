@@ -7,12 +7,12 @@ const FurnitureModel = require("../models/furniture.model");
 const upload = require("../multerConfig/multer");
 const cors = require("cors");
 
+const PORT = 3000;
+
 connectToDatabase();
 
 app.use(express.json());
 app.use(cors());
-
-// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -58,15 +58,21 @@ app.post("/newfurnitures/upload", upload.array("img", 3), async (req, res) => {
       size,
     } = req.body; // Suponhamos que você recebe o nome da categoria em vez do ID
 
-    const image = req.files;
+    const image = req.files.map(
+      (file) => `http://localhost:${PORT}/${file.path}`,
+    );
+
+    console.log(image);
 
     const imagesUrls = [];
 
-    image.forEach((images) => {
-      if (images.path) {
-        imagesUrls.push(images.path);
-      }
-    });
+    // image.forEach((images) => {
+    //   if (images.path) {
+    //     imagesUrls.push(images.path);
+    //   }
+    // });
+
+    // console.log(imagesUrls);
 
     // Encontre a categoria com base no nome fornecido
     const categoria = await CategoriesModel.findOne({ categories: categorie });
@@ -78,7 +84,7 @@ app.post("/newfurnitures/upload", upload.array("img", 3), async (req, res) => {
     // Crie o produto usando o ID da categoria recuperado
     const newProduct = new FurnitureModel({
       categorie: categoria._id,
-      img: imagesUrls,
+      img: image,
       name,
       price,
       otherImgs,
