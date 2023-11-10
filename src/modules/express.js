@@ -5,10 +5,12 @@ const connectToDatabase = require("../database/connect");
 const CategoriesModel = require("../models/categories.model");
 const FurnitureModel = require("../models/furniture.model");
 const upload = require("../multerConfig/multer");
+const cors = require("cors");
 
 connectToDatabase();
 
 app.use(express.json());
+app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
