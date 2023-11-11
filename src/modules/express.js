@@ -6,8 +6,7 @@ const CategoriesModel = require("../models/categories.model");
 const FurnitureModel = require("../models/furniture.model");
 const upload = require("../multerConfig/multer");
 const cors = require("cors");
-
-const PORT = 3000;
+const path = require("path");
 
 connectToDatabase();
 
@@ -16,6 +15,8 @@ app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+app.use("/img", express.static(path.resolve(__dirname, "..", "..", "uploads")));
 
 app.get("/categories", async (req, res) => {
   const categories = await CategoriesModel.find({});
