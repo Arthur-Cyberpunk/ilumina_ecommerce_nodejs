@@ -17,15 +17,10 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  next();
-});
-
 app.get("/categories", async (req, res) => {
   const categories = await CategoriesModel.find({});
 
-  res.status(201).json(categories);
+  res.status(200).json(categories);
 });
 
 app.post("/newcategories", async (req, res) => {
@@ -41,10 +36,10 @@ app.post("/newcategories", async (req, res) => {
 app.get("/furnitures", async (req, res) => {
   const furnitures = await FurnitureModel.find({});
 
-  res.status(201).json(furnitures);
+  res.status(200).json(furnitures);
 });
 
-app.post("/newfurnitures/upload", upload.array("img", 3), async (req, res) => {
+app.post("/newfurnitures", upload.array("img", 3), async (req, res) => {
   try {
     const {
       categorie,
@@ -58,19 +53,17 @@ app.post("/newfurnitures/upload", upload.array("img", 3), async (req, res) => {
       size,
     } = req.body; // Suponhamos que você recebe o nome da categoria em vez do ID
 
-    const image = req.files.map(
-      (file) => `http://localhost:${PORT}/${file.path.replace(/\\/g, "/")}`,
-    );
+    const image = req.files;
 
     console.log(image);
 
-    // const imagesUrls = [];
+    const imagesUrls = [];
 
-    // image.forEach((images) => {
-    //   if (images.path) {
-    //     imagesUrls.push(images.path);
-    //   }
-    // });
+    image.forEach((images) => {
+      if (images.path) {
+        imagesUrls.push(images.path);
+      }
+    });
 
     // console.log(imagesUrls);
 
@@ -84,7 +77,7 @@ app.post("/newfurnitures/upload", upload.array("img", 3), async (req, res) => {
     // Crie o produto usando o ID da categoria recuperado
     const newProduct = new FurnitureModel({
       categorie: categoria._id,
-      img: image.path,
+      img: imagesUrls,
       name,
       price,
       otherImgs,
@@ -105,14 +98,6 @@ app.post("/newfurnitures/upload", upload.array("img", 3), async (req, res) => {
     res.status(500).json({ message: "Erro ao criar o produto" });
   }
 });
-
-// app.post("/upload", upload.single("file"), (req, res) => {
-//   try {
-//     res.status(201).json(req.file.filename);
-//   } catch (error) {
-//     res.status(500).send(error.message);
-//   }
-// });
 
 const port = process.env.PORT || 3000;
 

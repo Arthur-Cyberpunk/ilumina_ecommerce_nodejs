@@ -4,12 +4,12 @@ const path = require("path");
 // Configure o local onde os arquivos serão salvos
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.resolve("uploads"));
+    cb(null, "uploads");
   },
   filename: function (req, file, cb) {
     const time = new Date().getTime();
 
-    cb(null, `${time}_${file.originalname}`);
+    cb(null, time + path.extname(file.originalname));
   },
 });
 
