@@ -58,19 +58,15 @@ app.post("/newfurnitures/upload", upload.array("img", 3), async (req, res) => {
       size,
     } = req.body; // Suponhamos que você recebe o nome da categoria em vez do ID
 
-    const image = req.files.map(
-      (file) => `http://localhost:${PORT}/${file.path}`,
-    );
-
-    console.log(image);
+    const image = req.files;
 
     const imagesUrls = [];
 
-    // image.forEach((images) => {
-    //   if (images.path) {
-    //     imagesUrls.push(images.path);
-    //   }
-    // });
+    image.forEach((images) => {
+      if (images.path) {
+        imagesUrls.push(images.path);
+      }
+    });
 
     // console.log(imagesUrls);
 
@@ -84,7 +80,7 @@ app.post("/newfurnitures/upload", upload.array("img", 3), async (req, res) => {
     // Crie o produto usando o ID da categoria recuperado
     const newProduct = new FurnitureModel({
       categorie: categoria._id,
-      img: image,
+      img: imagesUrls,
       name,
       price,
       otherImgs,
