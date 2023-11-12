@@ -7,6 +7,16 @@ const FurnitureModel = require("../models/furniture.model");
 const upload = require("../multerConfig/multer");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
+const AWS = require("aws-sdk");
+
+AWS.config.update({
+  accessKeyId: `${process.env.ACCESS_KEY_ID}`,
+  secretAccessKey: `${process.env.SECRETKEYACCESS}`,
+  region: `${process.env.REGION}`,
+});
+
+const s3 = new AWS.S3();
 
 connectToDatabase();
 
@@ -54,20 +64,26 @@ app.post("/newfurnitures", upload.array("img", 3), async (req, res) => {
       size,
     } = req.body; // Suponhamos que você recebe o nome da categoria em vez do ID
 
-    const image = req.files;
+    const files = req.files;
 
-    console.log(image);
+    const imageUrls = [];
 
-    const imagesUrls = [];
+    for (const file of files) {
+      const imageBuffer = fs.readFileSync(file.path);
 
-    image.forEach((images) => {
-      if (images.path) {
-        imagesUrls.push(images.path);
-      }
-    });
+      const key = `product-images/${Date.now()}-${file.originalname}`;
+      const params = {
+        Bucket: "imagesiluminaecommerce",
+        Key: key,
+        Body: imageBuffer,
+        ContentType: file.mimetype,
+      };
 
-    // console.log(imagesUrls);
+      const data = await s3.upload(params).promise();
+      imageUrls.push(data.Location);
+    }
 
+    console.log(imageUrls);
     // Encontre a categoria com base no nome fornecido
     const categoria = await CategoriesModel.findOne({ categories: categorie });
 
@@ -78,7 +94,7 @@ app.post("/newfurnitures", upload.array("img", 3), async (req, res) => {
     // Crie o produto usando o ID da categoria recuperado
     const newProduct = new FurnitureModel({
       categorie: categoria._id,
-      img: imagesUrls,
+      img: imageUrls,
       name,
       price,
       otherImgs,
@@ -102,6 +118,4 @@ app.post("/newfurnitures", upload.array("img", 3), async (req, res) => {
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, "0.0.0.0", function () {
-  // ...
-});
+app.listen(port, "0.0.0.0", function () {});
