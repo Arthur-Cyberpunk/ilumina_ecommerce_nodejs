@@ -53,7 +53,7 @@ app.get("/furnitures", async (req, res) => {
 app.post("/newfurnitures", upload.array("img", 3), async (req, res) => {
   try {
     const {
-      categorie,
+      categories,
       img,
       name,
       price,
@@ -62,7 +62,7 @@ app.post("/newfurnitures", upload.array("img", 3), async (req, res) => {
       texture,
       weight,
       size,
-    } = req.body; // Suponhamos que você recebe o nome da categoria em vez do ID
+    } = req.body;
 
     const files = req.files;
 
@@ -83,17 +83,8 @@ app.post("/newfurnitures", upload.array("img", 3), async (req, res) => {
       imageUrls.push(data.Location);
     }
 
-    console.log(imageUrls);
-    // Encontre a categoria com base no nome fornecido
-    const categoria = await CategoriesModel.findOne({ categories: categorie });
-
-    if (!categoria) {
-      return res.status(404).json({ message: "Categoria não encontrada" });
-    }
-
-    // Crie o produto usando o ID da categoria recuperado
     const newProduct = new FurnitureModel({
-      categorie: categoria._id,
+      categories,
       img: imageUrls,
       name,
       price,
@@ -104,10 +95,7 @@ app.post("/newfurnitures", upload.array("img", 3), async (req, res) => {
       size,
     });
 
-    // Salve o novo produto no banco de dados
     await newProduct.save();
-
-    console.log(newProduct);
 
     res.status(201).json(newProduct);
   } catch (err) {
