@@ -2,4 +2,4 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-require("./src/modules/express");
+require("./src/modules/furniture");
