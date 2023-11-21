@@ -10,5 +10,6 @@
 
 » Javascript <br>
 » NodeJs <br>
+» AWS <br>
 
 </div>
